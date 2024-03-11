@@ -28,6 +28,9 @@
       "relation": "oneToOne",
       "target": "plugin::users-permissions.user",
       "inversedBy": "cart"
+    },
+    "addedAt": {
+      "type": "datetime"
     }
   }
 }
