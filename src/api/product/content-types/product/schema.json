@@ -69,6 +69,10 @@
       "relation": "manyToOne",
       "target": "api::order.order",
       "inversedBy": "products"
+    },
+    "stockInCart": {
+      "type": "integer",
+      "default": 0
     }
   }
 }

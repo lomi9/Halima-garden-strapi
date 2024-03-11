@@ -925,6 +925,7 @@ export interface ApiProductProduct extends Schema.CollectionType {
       'manyToOne',
       'api::order.order'
     >;
+    stockInCart: Attribute.Integer & Attribute.DefaultTo<0>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
