@@ -8,9 +8,17 @@ module.exports = ({ env }) => ({
     populateRelations: env.bool("WEBHOOKS_POPULATE_RELATIONS", false),
   },
   cron: {
-    "*/1 * * * *": () => {
-      // Cette tâche s'exécutera toutes les minutes
-      strapi.services.cart.cleanupExpiredCarts();
+    enabled: true,
+    jobs: {
+      // Exécute la fonction cleanupExpiredCarts toutes les minutes pour les tests
+      "*/1 * * * *": async () => {
+        try {
+          console.log("Running cleanupExpiredCarts task");
+          await strapi.services.cart.cleanupExpiredCarts();
+        } catch (error) {
+          console.error("Error during cleanupExpiredCarts task", error);
+        }
+      },
     },
   },
 });
