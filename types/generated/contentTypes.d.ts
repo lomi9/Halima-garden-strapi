@@ -771,6 +771,11 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'oneToMany',
       'api::order.order'
     >;
+    cart: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'oneToOne',
+      'api::cart.cart'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -794,6 +799,7 @@ export interface ApiCartCart extends Schema.CollectionType {
     singularName: 'cart';
     pluralName: 'carts';
     displayName: 'Cart';
+    description: '';
   };
   options: {
     draftAndPublish: true;
@@ -805,6 +811,11 @@ export interface ApiCartCart extends Schema.CollectionType {
       'api::cart.cart',
       'oneToMany',
       'api::product.product'
+    >;
+    users_permissions_user: Attribute.Relation<
+      'api::cart.cart',
+      'oneToOne',
+      'plugin::users-permissions.user'
     >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
@@ -925,7 +936,14 @@ export interface ApiProductProduct extends Schema.CollectionType {
       'manyToOne',
       'api::order.order'
     >;
-    stockInCart: Attribute.Integer & Attribute.DefaultTo<0>;
+    stockInCart: Attribute.Integer &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
