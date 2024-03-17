@@ -8,8 +8,10 @@ module.exports = createCoreService("api::cart.cart", ({ strapi }) => ({
    */
   async cleanupExpiredCarts() {
     // Définir la date limite, par exemple pour une expiration après 30 minutes
-    const expirationTime = 30 * 60 * 1000; // 30 minutes en millisecondes
+    const expirationTime = 2 * 60 * 1000; // 2 minutes en millisecondes
     const dateLimit = new Date(new Date().getTime() - expirationTime);
+
+    console.log(`Recherche de paniers expirés avant : ${dateLimit}`);
 
     // Récupérer tous les paniers dont la date de mise à jour est antérieure à la limite
     const expiredCarts = await strapi.entityService.findMany("api::cart.cart", {
@@ -17,26 +19,33 @@ module.exports = createCoreService("api::cart.cart", ({ strapi }) => ({
       populate: { products: true }, // Assurez-vous de peupler les produits si c'est une relation
     });
 
+    console.log(`${expiredCarts.length} panier(s) expiré(s) trouvé(s).`);
+
     // Traiter chaque panier expiré
     for (const cart of expiredCarts) {
-      if (cart.products && cart.products.length > 0) {
-        for (const product of cart.products) {
-          // Réajuster le stock des produits
-          await strapi.entityService.update(
-            "api::product.product",
-            product.id,
-            {
-              data: {
-                stock: product.stock + 1,
-                stockInCart: product.stockInCart - 1,
-              },
-            }
-          );
-        }
+      console.log(
+        `Traitement du panier ${cart.id} avec ${cart.products.length} produit(s).`
+      );
+
+      for (const product of cart.products) {
+        console.log(
+          `Mise à jour du stock pour le produit ${product.id}: stock actuel ${product.stock}, stockInCart ${product.stockInCart}.`
+        );
+
+        await strapi.entityService.update("api::product.product", product.id, {
+          data: {
+            stock: product.stock + 1,
+            stockInCart: product.stockInCart - 1,
+          },
+        });
+
+        console.log(
+          `Produit ${product.id} mis à jour : +1 stock, -1 stockInCart.`
+        );
       }
 
-      // Optionnel : supprimer le panier ou marquer comme expiré
       await strapi.entityService.delete("api::cart.cart", cart.id);
+      console.log(`Panier ${cart.id} supprimé ou marqué comme expiré.`);
     }
   },
 }));
