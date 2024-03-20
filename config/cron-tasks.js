@@ -2,9 +2,9 @@ console.log("Initialisation des tâches cron...");
 
 module.exports = {
   /**
-   * Tâche Cron pour nettoyer les paniers expirés toutes les 2 minutes.
+   * Tâche Cron pour nettoyer les paniers expirés toutes les 2 heures.
    */
-  "*/2 * * * *": async ({ strapi }) => {
+  "0 */2 * * * *": async ({ strapi }) => {
     try {
       console.log(
         "Exécution de la tâche cron pour nettoyer les paniers expirés."

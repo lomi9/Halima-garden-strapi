@@ -7,8 +7,8 @@ module.exports = createCoreService("api::cart.cart", ({ strapi }) => ({
    * Nettoie les paniers expirés en réajustant les stocks des produits concernés.
    */
   async cleanupExpiredCarts() {
-    // Définir la date limite, par exemple pour une expiration après 30 minutes
-    const expirationTime = 2 * 60 * 1000; // 2 minutes en millisecondes
+    // Définit la date limite
+    const expirationTime = 2 * 60 * 60 * 1000; // 2 heures en millisecondes
     const dateLimit = new Date(new Date().getTime() - expirationTime);
 
     console.log(`Recherche de paniers expirés avant : ${dateLimit}`);
@@ -16,7 +16,7 @@ module.exports = createCoreService("api::cart.cart", ({ strapi }) => ({
     // Récupérer tous les paniers dont la date de mise à jour est antérieure à la limite
     const expiredCarts = await strapi.entityService.findMany("api::cart.cart", {
       filters: { addedAt: { $lt: dateLimit } },
-      populate: { products: true }, // Assurez-vous de peupler les produits si c'est une relation
+      populate: { products: true }, // Bien peupler les produits si c'est une relation
     });
 
     console.log(`${expiredCarts.length} panier(s) expiré(s) trouvé(s).`);
