@@ -818,6 +818,7 @@ export interface ApiCartCart extends Schema.CollectionType {
       'plugin::users-permissions.user'
     >;
     addedAt: Attribute.DateTime;
+    quantity: Attribute.Integer & Attribute.Required;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;

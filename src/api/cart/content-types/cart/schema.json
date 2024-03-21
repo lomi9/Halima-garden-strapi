@@ -31,6 +31,10 @@
     },
     "addedAt": {
       "type": "datetime"
+    },
+    "quantity": {
+      "type": "integer",
+      "required": true
     }
   }
 }
