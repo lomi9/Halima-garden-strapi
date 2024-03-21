@@ -23,12 +23,6 @@
       "relation": "oneToMany",
       "target": "api::product.product"
     },
-    "users_permissions_user": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "plugin::users-permissions.user",
-      "inversedBy": "cart"
-    },
     "addedAt": {
       "type": "datetime"
     },

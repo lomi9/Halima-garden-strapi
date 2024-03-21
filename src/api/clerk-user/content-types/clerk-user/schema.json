@@ -1,0 +1,23 @@
+{
+  "kind": "collectionType",
+  "collectionName": "clerk_users",
+  "info": {
+    "singularName": "clerk-user",
+    "pluralName": "clerk-users",
+    "displayName": "ClerkUser"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "email": {
+      "type": "string"
+    },
+    "carts": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::cart.cart"
+    }
+  }
+}

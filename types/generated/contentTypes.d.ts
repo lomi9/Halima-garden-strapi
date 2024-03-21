@@ -771,11 +771,6 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'oneToMany',
       'api::order.order'
     >;
-    cart: Attribute.Relation<
-      'plugin::users-permissions.user',
-      'oneToOne',
-      'api::cart.cart'
-    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -811,11 +806,6 @@ export interface ApiCartCart extends Schema.CollectionType {
       'api::cart.cart',
       'oneToMany',
       'api::product.product'
-    >;
-    users_permissions_user: Attribute.Relation<
-      'api::cart.cart',
-      'oneToOne',
-      'plugin::users-permissions.user'
     >;
     addedAt: Attribute.DateTime;
     quantity: Attribute.Integer & Attribute.Required;
@@ -885,6 +875,41 @@ export interface ApiCategoryCategory extends Schema.CollectionType {
       Attribute.Private;
     updatedBy: Attribute.Relation<
       'api::category.category',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiClerkUserClerkUser extends Schema.CollectionType {
+  collectionName: 'clerk_users';
+  info: {
+    singularName: 'clerk-user';
+    pluralName: 'clerk-users';
+    displayName: 'ClerkUser';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    email: Attribute.String;
+    carts: Attribute.Relation<
+      'api::clerk-user.clerk-user',
+      'oneToMany',
+      'api::cart.cart'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::clerk-user.clerk-user',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::clerk-user.clerk-user',
       'oneToOne',
       'admin::user'
     > &
@@ -1013,6 +1038,7 @@ declare module '@strapi/types' {
       'api::cart.cart': ApiCartCart;
       'api::cat.cat': ApiCatCat;
       'api::category.category': ApiCategoryCategory;
+      'api::clerk-user.clerk-user': ApiClerkUserClerkUser;
       'api::order.order': ApiOrderOrder;
       'api::product.product': ApiProductProduct;
     }
