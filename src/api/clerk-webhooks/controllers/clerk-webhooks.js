@@ -1,20 +1,35 @@
-// clerk-webhook.js
 module.exports = {
   async handleClerkWebhook(ctx) {
-    const { emailAddress } = ctx.request.body.data; // Assurez-vous que le chemin est correct
+    // Obtenir les données de l'événement Clerk envoyées dans le corps de la requête
+    const eventData = ctx.request.body;
+
+    // Extraire l'adresse email principale
+    const emailAddress = eventData.data.email_addresses.find(
+      (email) => email.id === eventData.data.primary_email_address_id
+    ).email_address;
 
     try {
-      // Créer un nouveau 'Clerk-user' avec l'email reçu de Clerk
-      // Assurez-vous que le service est nommé correctement. Il doit correspondre à votre modèle Strapi
-      const newUser = await strapi.services["clerk-user"].create({
-        email: emailAddress,
-      });
-      return ctx.created(newUser);
+      // Vérifiez si un utilisateur existe avec cette adresse email
+      const existingUser = await strapi
+        .query("clerk-user")
+        .findOne({ email: emailAddress });
+
+      if (existingUser) {
+        // Si l'utilisateur existe déjà, mettez à jour les informations (si nécessaire)
+        await strapi
+          .query("clerk-user")
+          .update({ id: existingUser.id }, { email: emailAddress });
+        ctx.send({ message: "Utilisateur mis à jour avec succès." });
+      } else {
+        // Si l'utilisateur n'existe pas, créez-en un nouveau
+        await strapi.query("clerk-user").create({ email: emailAddress });
+        ctx.send({ message: "Nouvel utilisateur créé avec succès." });
+      }
     } catch (error) {
-      console.error(error); // Ajout pour le débogage
-      return ctx.badRequest(
-        "Une erreur est survenue lors de la création de l'utilisateur Clerk.",
-        { error }
+      // Gérer les erreurs
+      ctx.throw(
+        500,
+        "Une erreur est survenue lors de la création ou la mise à jour de l'utilisateur Clerk."
       );
     }
   },
