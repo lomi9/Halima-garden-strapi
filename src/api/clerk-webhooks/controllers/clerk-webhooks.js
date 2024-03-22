@@ -1,28 +1,16 @@
 module.exports = {
   async handleClerkWebhook(ctx) {
-    const { data } = ctx.request.body; // Les données envoyées par Clerk.
-
-    const email = data.email_addresses[0].email_address; // Email principal de l'utilisateur.
+    const { emailAddress } = ctx.request.body.data;
 
     try {
-      // Rechercher s'il existe déjà un utilisateur avec cet email.
-      const existingUser = await strapi.query("clerk_users").findOne({ email });
-
-      if (existingUser) {
-        // Mettre à jour l'utilisateur si nécessaire.
-        await strapi
-          .query("clerk_users")
-          .update({ id: existingUser.id }, { email });
-        ctx.send({ message: "Utilisateur mis à jour avec succès." });
-      } else {
-        // Créer un nouvel utilisateur.
-        await strapi.query("clerk_users").create({ email });
-        ctx.send({ message: "Nouvel utilisateur créé avec succès." });
-      }
+      // Créer un nouveau 'Clerk-user' avec l'email reçu de Clerk
+      const newUser = await strapi.services["clerk_users"].create({
+        email: emailAddress,
+      });
+      return ctx.created(newUser);
     } catch (error) {
-      ctx.send(
-        { message: "Erreur lors de la gestion du webhook.", error },
-        500
+      return ctx.badRequest(
+        "Une erreur est survenue lors de la création de l'utilisateur Clerk."
       );
     }
   },
