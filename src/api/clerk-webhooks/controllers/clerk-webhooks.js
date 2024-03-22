@@ -6,17 +6,17 @@ module.exports = {
 
     try {
       // Rechercher s'il existe déjà un utilisateur avec cet email.
-      const existingUser = await strapi.query("clerk-user").findOne({ email });
+      const existingUser = await strapi.query("clerk_users").findOne({ email });
 
       if (existingUser) {
         // Mettre à jour l'utilisateur si nécessaire.
         await strapi
-          .query("clerk-user")
+          .query("clerk_users")
           .update({ id: existingUser.id }, { email });
         ctx.send({ message: "Utilisateur mis à jour avec succès." });
       } else {
         // Créer un nouvel utilisateur.
-        await strapi.query("clerk-user").create({ email });
+        await strapi.query("clerk_users").create({ email });
         ctx.send({ message: "Nouvel utilisateur créé avec succès." });
       }
     } catch (error) {
