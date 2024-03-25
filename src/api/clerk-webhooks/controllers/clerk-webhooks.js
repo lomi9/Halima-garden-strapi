@@ -14,7 +14,7 @@ module.exports = {
       return ctx.throw(400, "Aucune adresse e-mail trouvée dans le payload.");
     }
 
-    const emailAddress = data.email_addresses[0].email_address;
+    const emailAddress = data.email_addresses.email_address;
 
     if (!emailAddress) {
       console.log("Email principal manquant dans le payload.");
