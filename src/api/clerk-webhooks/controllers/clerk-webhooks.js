@@ -5,16 +5,19 @@ module.exports = {
 
     const { data } = ctx.request.body;
 
+    // S'assurer que l'email est présent dans le payload
     if (
       !data ||
-      !Array.isArray(data.email_addresses) ||
-      data.email_addresses.length === 0
+      !data.email_addresses ||
+      data.email_addresses.length === 0 ||
+      !data.email_addresses[0].email_address
     ) {
-      console.log("Aucune adresse e-mail trouvée dans le payload.");
-      return ctx.throw(400, "Aucune adresse e-mail trouvée dans le payload.");
+      console.log("Email manquant dans le payload reçu de Clerk.");
+      return ctx.throw(400, "Email manquant dans le payload reçu de Clerk.");
     }
 
-    const emailAddress = data.email_addresses.email_address;
+    // Extraire l'adresse e-mail
+    const emailAddress = data.email_addresses[0].email_address;
 
     if (!emailAddress) {
       console.log("Email principal manquant dans le payload.");
@@ -45,10 +48,8 @@ module.exports = {
         ctx.send({ message: "Nouvel utilisateur créé avec succès.", newUser });
       }
     } catch (error) {
-      ctx.throw(
-        500,
-        `Erreur lors de la création ou la mise à jour de l'utilisateur : ${error.message}`
-      );
+      console.error("Erreur lors de la manipulation du webhook:", error);
+      ctx.throw(500, "Erreur lors de la manipulation du webhook");
     }
   },
 };
