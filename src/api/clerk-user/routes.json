@@ -2,7 +2,7 @@
     "routes": [
       {
         "method": "POST",
-        "path": "/webhooks/clerk",
+        "path": "/clerk-users",
         "handler": "clerk-user.handleClerkWebhook",
         "config": {
           "policies": []
