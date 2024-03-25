@@ -8,14 +8,19 @@ module.exports = {
       return ctx.throw(400, "Requête invalide - données manquantes.");
     }
 
-    // Extraire l'adresse email principale en assumant que le premier est l'email principal
-    const primaryEmailObject = eventData.data.email_addresses.find(
-      (email) => email.id === eventData.data.primary_email_address_id
+    // Trouver l'email vérifié (ou le premier email si vous n'avez pas d'email vérifié)
+    const verifiedEmailObject = eventData.data.email_addresses.find(
+      (email) => email.verification && email.verification.status === "verified"
     );
-    const primaryEmail = primaryEmailObject
-      ? primaryEmailObject.email_address
+    let primaryEmail = verifiedEmailObject
+      ? verifiedEmailObject.email_address
       : null;
 
+    if (!primaryEmail) {
+      // Si aucun email vérifié n'est trouvé, utilisez le premier email dans la liste à la place
+      const firstEmailObject = eventData.data.email_addresses[0];
+      primaryEmail = firstEmailObject ? firstEmailObject.email_address : null;
+    }
     if (!primaryEmail) {
       return ctx.throw(
         400,
