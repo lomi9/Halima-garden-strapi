@@ -1,26 +1,24 @@
 module.exports = {
   async handleClerkWebhook(ctx) {
-    // Log le contenu pour voir ce que nous recevons de Clerk
+    // Log du contenu reçu par Clerk
     console.log("Payload reçu:", ctx.request.body);
 
-    // Assurez-vous que nous avons les bonnes données dans le payload
     const { data } = ctx.request.body;
-    if (!data || !data.email_addresses || data.email_addresses.length === 0) {
-      return ctx.throw(
-        400,
-        "Données de webhook invalides ou adresse e-mail manquante."
-      );
+
+    if (
+      !data ||
+      !Array.isArray(data.email_addresses) ||
+      data.email_addresses.length === 0
+    ) {
+      console.log("Aucune adresse e-mail trouvée dans le payload.");
+      return ctx.throw(400, "Aucune adresse e-mail trouvée dans le payload.");
     }
 
-    // Puisque le payload montre que l'adresse email est dans email_addresses[0].email_address
-    // Nous utilisons cette valeur pour l'email
     const emailAddress = data.email_addresses[0].email_address;
 
     if (!emailAddress) {
-      return ctx.throw(
-        400,
-        "Email principal manquant dans les données de webhook"
-      );
+      console.log("Email principal manquant dans le payload.");
+      return ctx.throw(400, "Email principal manquant dans le payload.");
     }
 
     try {
