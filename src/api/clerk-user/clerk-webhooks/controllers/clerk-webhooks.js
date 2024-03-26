@@ -2,8 +2,13 @@ const { Webhook } = require("svix");
 
 module.exports = {
   async handleClerkWebhook(ctx) {
+    console.log("Début de la fonction handleClerkWebhook");
     const payload = ctx.request.body;
     const headers = ctx.request.headers;
+
+    // Log du payload et des headers pour débogage
+    console.log("Payload reçu:", payload);
+    console.log("Headers reçus:", headers);
 
     // Création de l'instance Webhook avec votre clé secrète
     const webhook = new Webhook(process.env.WEBHOOK_SECRET);
@@ -16,8 +21,14 @@ module.exports = {
         "svix-signature": headers["svix-signature"],
       });
 
+      // Log après la vérification pour confirmer que la vérification a réussi
+      console.log("Signature du webhook vérifiée avec succès");
+
       // Votre logique existante
       const { data } = payload;
+
+      // Log pour vérifier que le payload contient bien les données attendues
+      console.log("Données extraites du payload:", data);
 
       if (
         !data ||
