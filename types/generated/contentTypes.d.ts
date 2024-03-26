@@ -917,6 +917,36 @@ export interface ApiClerkUserClerkUser extends Schema.CollectionType {
   };
 }
 
+export interface ApiConnectedUserConnectedUser extends Schema.CollectionType {
+  collectionName: 'connected_users';
+  info: {
+    singularName: 'connected-user';
+    pluralName: 'connected-users';
+    displayName: 'connected-user';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    email: Attribute.String;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::connected-user.connected-user',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::connected-user.connected-user',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface ApiOrderOrder extends Schema.CollectionType {
   collectionName: 'orders';
   info: {
@@ -1039,6 +1069,7 @@ declare module '@strapi/types' {
       'api::cat.cat': ApiCatCat;
       'api::category.category': ApiCategoryCategory;
       'api::clerk-user.clerk-user': ApiClerkUserClerkUser;
+      'api::connected-user.connected-user': ApiConnectedUserConnectedUser;
       'api::order.order': ApiOrderOrder;
       'api::product.product': ApiProductProduct;
     }

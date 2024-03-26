@@ -1,0 +1,18 @@
+{
+  "kind": "collectionType",
+  "collectionName": "connected_users",
+  "info": {
+    "singularName": "connected-user",
+    "pluralName": "connected-users",
+    "displayName": "connected-user"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "email": {
+      "type": "string"
+    }
+  }
+}
