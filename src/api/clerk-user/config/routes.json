@@ -3,7 +3,7 @@
       {
         "method": "POST",
         "path": "/api/clerk-users",
-        "handler": "clerk-user.clerk-webhooks.handleClerkWebhook",
+        "handler": "clerk-webhooks.handleClerkWebhook",
         "config": {
           "policies": []
         }
