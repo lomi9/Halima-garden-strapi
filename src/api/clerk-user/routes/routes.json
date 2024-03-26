@@ -5,7 +5,8 @@
         "path": "/api/clerk-users",
         "handler": "clerk-webhooks.handleClerkWebhook",
         "config": {
-          "policies": []
+          "policies": [],
+          "public": true
         }
       }
     ]
