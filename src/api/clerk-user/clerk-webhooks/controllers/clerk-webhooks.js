@@ -1,37 +1,46 @@
+const { Webhook } = require("svix");
+
 module.exports = {
   async handleClerkWebhook(ctx) {
-    // Log du contenu reçu par Clerk
-    console.log("Payload reçu:", ctx.request.body);
+    const payload = ctx.request.body;
+    const headers = ctx.request.headers;
 
-    const { data } = ctx.request.body;
-
-    // S'assurer que l'email est présent dans le payload
-    if (
-      !data ||
-      !data.email_addresses ||
-      data.email_addresses.length === 0 ||
-      !data.email_addresses[0].email_address
-    ) {
-      console.log("Email manquant dans le payload reçu de Clerk.");
-      return ctx.throw(400, "Email manquant dans le payload reçu de Clerk.");
-    }
-
-    // Extraire l'adresse e-mail
-    const emailAddress = data.email_addresses[0].email_address;
-
-    if (!emailAddress) {
-      console.log("Email principal manquant dans le payload.");
-      return ctx.throw(400, "Email principal manquant dans le payload.");
-    }
+    // Création de l'instance Webhook avec votre clé secrète
+    const webhook = new Webhook(process.env.WEBHOOK_SECRET);
 
     try {
-      // Vérifiez si un utilisateur existe avec cette adresse email
+      // Vérification de la signature du webhook
+      webhook.verify(JSON.stringify(payload), {
+        "svix-id": headers["svix-id"],
+        "svix-timestamp": headers["svix-timestamp"],
+        "svix-signature": headers["svix-signature"],
+      });
+
+      // Votre logique existante
+      const { data } = payload;
+
+      if (
+        !data ||
+        !data.email_addresses ||
+        !data.email_addresses.length ||
+        !data.email_addresses[0].email_address
+      ) {
+        console.log("Email manquant dans le payload reçu de Clerk.");
+        return ctx.throw(400, "Email manquant dans le payload reçu de Clerk.");
+      }
+
+      const emailAddress = data.email_addresses[0].email_address;
+
+      if (!emailAddress) {
+        console.log("Email principal manquant dans le payload.");
+        return ctx.throw(400, "Email principal manquant dans le payload.");
+      }
+
       const existingUser = await strapi.services["clerk-user"].findOne({
         email: emailAddress,
       });
 
       if (existingUser) {
-        // Si l'utilisateur existe déjà, mettez à jour les informations (si nécessaire)
         const updatedUser = await strapi.services["clerk-user"].update(
           { id: existingUser.id },
           { email: emailAddress }
@@ -41,15 +50,20 @@ module.exports = {
           updatedUser,
         });
       } else {
-        // Si l'utilisateur n'existe pas, créez-en un nouveau
         const newUser = await strapi.services["clerk-user"].create({
           email: emailAddress,
         });
         ctx.send({ message: "Nouvel utilisateur créé avec succès.", newUser });
       }
     } catch (error) {
-      console.error("Erreur lors de la manipulation du webhook:", error);
-      ctx.throw(500, "Erreur lors de la manipulation du webhook");
+      console.error(
+        "Erreur lors de la vérification ou de la manipulation du webhook:",
+        error
+      );
+      ctx.throw(
+        500,
+        `Erreur lors de la vérification ou de la manipulation du webhook: ${error.message}`
+      );
     }
   },
 };
